@@ -14,37 +14,17 @@ The data is in a csv file but was delimited by semicolns instead of commas. I re
 
 #Problem 3: Understanding the Features
 Input variables:
--bank client data:
-1 - age (numeric)
-2 - job : type of job (categorical: 'admin.','blue-collar','entrepreneur','housemaid','management','retired','self-employed','services','student','technician','unemployed','unknown')
-3 - marital : marital status (categorical: 'divorced','married','single','unknown'; note: 'divorced' means divorced or widowed)
-4 - education (categorical: 'basic.4y','basic.6y','basic.9y','high.school','illiterate','professional.course','university.degree','unknown')
-5 - default: has credit in default? (categorical: 'no','yes','unknown')
-6 - housing: has housing loan? (categorical: 'no','yes','unknown')
-7 - loan: has personal loan? (categorical: 'no','yes','unknown')
-related with the last contact of the current campaign:
-8 - contact: contact communication type (categorical: 'cellular','telephone')
-9 - month: last contact month of year (categorical: 'jan', 'feb', 'mar', ..., 'nov', 'dec')
-10 - day_of_week: last contact day of the week (categorical: 'mon','tue','wed','thu','fri')
-11 - duration: last contact duration, in seconds (numeric). Important note: this attribute highly affects the output target (e.g., if duration=0 then y='no'). Yet, the duration is not known before a call is performed. Also, after the end of the call y is obviously known. Thus, this input should only be included for benchmark purposes and should be discarded if the intention is to have a realistic predictive model.
-other attributes:
-12 - campaign: number of contacts performed during this campaign and for this client (numeric, includes last contact)
-13 - pdays: number of days that passed by after the client was last contacted from a previous campaign (numeric; 999 means client was not previously contacted)
-14 - previous: number of contacts performed before this campaign and for this client (numeric)
-15 - poutcome: outcome of the previous marketing campaign (categorical: 'failure','nonexistent','success')
-social and economic context attributes
-16 - emp.var.rate: employment variation rate - quarterly indicator (numeric)
-17 - cons.price.idx: consumer price index - monthly indicator (numeric)
-18 - cons.conf.idx: consumer confidence index - monthly indicator (numeric)
-19 - euribor3m: euribor 3 month rate - daily indicator (numeric)
-20 - nr.employed: number of employees - quarterly indicator (numeric)
+-bank client data: age , job, marital, education, default,housing,loan
+-related with the last contact of the current campaign:contact. month .day_of_week. duration
+-other attributes:campaign,pdays, previous,poutcome
+-social and economic context attributes emp.var.rate, cons.price.idx, cons.conf.idx, euribor3m, nr.employed
 
 Output variable (desired target):
 21 The output data is stored in column 'y' - has the client subscribed a term deposit? (binary: 'yes','no')
 
 #Problem 4: Understanding the Task
 The objective for this project is two fold:
- #1 Correctly predict when a person will say "yes" to a marketing campaign
+ #1 Correctly predict the person to call whowill say "yes" to a marketing campaign
  #2 Compare 4 different model types 
 
 #Problem 5: Engineering Features
@@ -53,22 +33,21 @@ The recall and precision scores will be the most telling measure.
   precision = From all of the positive class we predicted as 'yes', how many are actually 'yes'?
   recall = From all of the positive class, how many we predicted correctly.
 
+the main data cleaning was: 
 remove 'unknown' from data
 convert object data to binary
 Change object 'education' data to ordinal 
-Change nominal/catagorical data to numeric    
-df_bank = pd.get_dummies(df_bank, columns=['job','marital', 'month', 'day_of_week'] )
-
+Change nominal/catagorical data to numeric e.g. 'job','marital', 'month', 'day_of_week'
 
 I need to pair down any unneded or unhelpful features.  
 Run RFE to answer: What are the 10 best Logistic Regression feature?
                     What are the 10 best DecisionTree Classifier features
 RFE was not much help since they both used different features
-Logistic Regression: ['previous', 'emp.var.rate', 'job_retired', 'job_student', 'month_apr', 'month_mar', 'month_may', 'month_nov', 'month_sep', 'day_of_week_mon']
+Logistic Regression: = ['previous', 'emp.var.rate', 'job_retired', 'job_student', 'month_apr', 'month_mar', 'month_may', 'month_nov', 'month_sep', 'day_of_week_mon']
 
-Decision Tree ['age', 'education', 'housing', 'duration', 'campaign', 'previous', 'emp.var.rate', 'cons.conf.idx', 'marital_married', 'day_of_week_thu']
+Decision Tree = ['age', 'education', 'housing', 'duration', 'campaign', 'previous', 'emp.var.rate', 'cons.conf.idx', 'marital_married', 'day_of_week_thu']
 
-Lets look at the df_bank correlations now that all of the data has been transfomed where needed
+Let's look at the df_bank correlations now that all of the data has been transfomed where needed
 
 relevant_features
 duration          0.394254
@@ -117,7 +96,7 @@ Baseline our model should do better than just guessing the largest class 100% of
 'Baseline Recall = ', tp / (tp + fn))
 
 Create a table of scores for the base model types
-Model	              Train Time	Training Accuracy	Test Accuracy	Test Recall	Test Precision
+	Model	              Train Time	Training Accuracy	Test Accuracy	Test Recall	Test Precision
 0	svc	                3.381329	0.880454	        0.879875	    0.169657	  0.598553
 0	Decision Tree	      0.016613	0.878497	        0.876484	    0.169657	  0.525933
 0	Logistic Regression	0.039870	0.890498	        0.890179	    0.345464	  0.623497
